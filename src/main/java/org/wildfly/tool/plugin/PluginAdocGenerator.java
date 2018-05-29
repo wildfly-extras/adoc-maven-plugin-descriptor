@@ -112,24 +112,13 @@ public class PluginAdocGenerator implements org.apache.maven.tools.plugin.genera
                 + mojoDescriptor.getPluginDescriptor().getVersion() + ":" + mojoDescriptor.getGoal());
 
         if (StringUtils.isNotEmpty(mojoDescriptor.getDeprecated())) {
-            w.println();
-            w.println("." + getString("pluginasciidoc.mojodescriptor.deprecated"));
-            w.println("#### " + getString("pluginasciidoc.mojodescriptor.deprecated"));
-            w.println();
-            w.print(makeHtmlValid(mojoDescriptor.getDeprecated()));
-            w.println();
+            writeSection(w, getString("pluginasciidoc.mojodescriptor.deprecated"), makeHtmlValid(mojoDescriptor.getDeprecated()));
         }
-
-        w.println();
-        w.println("." + getString("pluginasciidoc.description"));
-        w.println("#### " + getString("pluginasciidoc.description"));
-        w.println();
         if (StringUtils.isNotEmpty(mojoDescriptor.getDescription())) {
-            w.println(makeHtmlValid(mojoDescriptor.getDescription()));
+            writeSection(w, getString("pluginasciidoc.description"), makeHtmlValid(mojoDescriptor.getDescription()));
         } else {
-            w.println(getString("pluginasciidoc.nodescription"));
+            writeSection(w, getString("pluginasciidoc.description"), getString("pluginasciidoc.nodescription"));
         }
-        w.println();
 
         writeGoalAttributes(mojoDescriptor, w);
 
@@ -143,8 +132,7 @@ public class PluginAdocGenerator implements org.apache.maven.tools.plugin.genera
     }
 
     private void writeSection(PrintWriter w, String title, String... content) {
-        w.print(".");
-        w.println(title);
+        w.println();
         w.print("#### ");
         w.println(title);
         for (String line : content) {
@@ -158,7 +146,7 @@ public class PluginAdocGenerator implements org.apache.maven.tools.plugin.genera
      * @param w not null
      */
     private void writeGoalAttributes(MojoDescriptor mojoDescriptor, PrintWriter w) {
-        w.println("." + getString("pluginasciidoc.mojodescriptor.attributes"));
+        writeSection(w, getString("pluginasciidoc.mojodescriptor.attributes"));
         w.println();
 
         String value;
@@ -262,18 +250,10 @@ public class PluginAdocGenerator implements org.apache.maven.tools.plugin.genera
 
             writeParameterDetails(mojoDescriptor, list, w);
         } else {
-            writeSubsection(getString("pluginasciidoc.mojodescriptor.parameters"), w);
+            writeSection(w, getString("pluginasciidoc.mojodescriptor.parameters"));
             w.println(getString("pluginasciidoc.mojodescriptor.noParameter"));
             w.println();
         }
-    }
-
-    private void writeSubsection(String name, PrintWriter w) {
-        w.print(".");
-        w.println(name);
-        w.print("##### ");
-        w.println(name);
-        w.println();
     }
 
     /**
@@ -306,7 +286,7 @@ public class PluginAdocGenerator implements org.apache.maven.tools.plugin.genera
      * @param w not null
      */
     private void writeParameterDetails(MojoDescriptor mojoDescriptor, List<Parameter> parameterList, PrintWriter w) {
-        writeSubsection(getString("pluginasciidoc.mojodescriptor.parameter.details"), w);
+        writeSection(w, getString("pluginasciidoc.mojodescriptor.parameter.details"));
 
         for (Iterator<Parameter> parameters = parameterList.iterator(); parameters.hasNext();) {
             Parameter parameter = parameters.next();
@@ -494,6 +474,8 @@ public class PluginAdocGenerator implements org.apache.maven.tools.plugin.genera
         String result = GeneratorUtils.makeHtmlValid(description);
         result = result.replaceAll("<code>", "`");
         result = result.replaceAll("</code>", "`");
+        result = result.replaceAll("<br/>", " +");
+        result = result.replaceAll("<br />", " +");
         return result;
     }
 
