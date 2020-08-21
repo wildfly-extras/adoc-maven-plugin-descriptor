@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 Red Hat, Inc. and/or its affiliates
+ * Copyright 2016-2020 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+
 import org.apache.maven.plugin.descriptor.MojoDescriptor;
 import org.apache.maven.plugin.descriptor.Parameter;
 import org.apache.maven.tools.plugin.ExtendedMojoDescriptor;
@@ -33,6 +34,7 @@ import org.apache.maven.tools.plugin.generator.GeneratorException;
 import org.apache.maven.tools.plugin.generator.GeneratorUtils;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.StringUtils;
+import org.wildfly.tool.plugin.formatter.Formatters;
 
 /**
  *
@@ -434,8 +436,8 @@ public class PluginAdocGenerator implements org.apache.maven.tools.plugin.genera
                 }
             }
 
-            // description
-            w.print("|");
+            // description, start with "a|" to allow for asciidoc formatting within the cell.
+            w.print(" a|");
             String description;
             if (StringUtils.isNotEmpty(parameter.getDeprecated())) {
                 description = format("pluginasciidoc.mojodescriptor.parameter.deprecated",
@@ -445,7 +447,10 @@ public class PluginAdocGenerator implements org.apache.maven.tools.plugin.genera
             } else {
                 description = getString("pluginasciidoc.nodescription");
             }
-            w.println(description + " +");
+            w.println(description);
+            // Print a new line instead of a "+" as the next line should not be associated as a continuation of this
+            // line.
+            w.println();
 
             if (StringUtils.isNotEmpty(parameter.getDefaultValue())) {
                 w.print(format("pluginasciidoc.mojodescriptor.parameter.defaultValue",
@@ -472,10 +477,7 @@ public class PluginAdocGenerator implements org.apache.maven.tools.plugin.genera
 
     private String makeHtmlValid(String description) {
         String result = GeneratorUtils.makeHtmlValid(description);
-        result = result.replaceAll("<code>", "`");
-        result = result.replaceAll("</code>", "`");
-        result = result.replaceAll("<br/>", " +");
-        result = result.replaceAll("<br />", " +");
+        result = Formatters.format(result);
         return result;
     }
 
