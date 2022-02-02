@@ -26,7 +26,7 @@
   </parent>
   <groupId>org.wildfly.extras</groupId>
   <artifactId>adoc-maven-plugin-descriptor</artifactId>
-  <version>1.0.0.Alpha3</version>
+  <version>1.0.0.Alpha4-SNAPSHOT</version>
   <name>Asciidoc Plugin Generator</name>
 
   <packaging>maven-plugin</packaging>
@@ -70,8 +70,4 @@
       <version>${version.maven.tools}</version>
     </dependency>
   </dependencies>
-
-  <scm>
-    <tag>adoc-maven-plugin-descriptor-1.0.0.Alpha3</tag>
-  </scm>
 </project>
